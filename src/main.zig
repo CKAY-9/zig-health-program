@@ -59,7 +59,7 @@ const Person = struct {
 };
 
 pub fn main() !void {
-    var buf: [64]u8 = undefined; // user input
+    var buf: [128]u8 = undefined; // user input
 
     // user inputs
     var kg: f16 = 75;
