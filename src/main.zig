@@ -56,6 +56,25 @@ const Person = struct {
         try stdout.print(" - BMI: {d}\n", .{self.calculateBodyMassIndex()});
         try stdout.print(" - Caloric Intake: {d}\n", .{self.calculateCalorieIntake()});
     }
+
+    pub fn saveDataToFile(self: *Person) !void {
+        _ = self;
+        _ = std.fs.cwd().makeDir("saves") catch |e|
+            switch (e) {
+            error.PathAlreadyExists => {
+                return;
+            },
+            else => return e,
+        };
+        var file = std.fs.cwd().createFile("saves/saves.txt", .{}) catch |e|
+            switch (e) {
+            error.PathAlreadyExists => {
+                return;
+            },
+            else => return e,
+        };
+        defer file.close();
+    }
 };
 
 pub fn main() !void {
@@ -109,4 +128,11 @@ pub fn main() !void {
     // create a new person with the user specified info
     var person = Person.init(kg, height, age, name, activity, male);
     try person.printInfo();
+
+    try stdout.print("Save information to file (y/n): ", .{});
+    if (try stdin.readUntilDelimiterOrEof(buf[0..], '\n')) |save_input| {
+        if (std.mem.eql(u8, save_input, "y")) {
+            try person.saveDataToFile();
+        }
+    }
 }
